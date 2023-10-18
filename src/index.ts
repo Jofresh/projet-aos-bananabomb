@@ -1,7 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import { config } from '~/config'
-import { PetsController  } from '~/resources/pets.controller'
+import { BotsController  } from '~/resources/bots.controller'
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler'
 import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler'
 
@@ -26,7 +26,7 @@ app.use(cors())
 /**
  * Toutes les routes CRUD pour les animaux seronts préfixées par `/pets`
  */
-app.use('/pets', PetsController)
+app.use('/', BotsController)
 
 /**
  * Homepage (uniquement necessaire pour cette demo)
