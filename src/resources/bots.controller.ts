@@ -7,18 +7,19 @@ import { Game } from '~~/types/Game'
 const BotsController = Router()
 
 BotsController.get('/bot-movement', (req, res) => {
-  const DIRECTIONS = [ "LEFT", "UP", "DOWN", "RIGHT"]
-  const ACTIONS = ["PLANT_BOMB", "MOVE"]
+  const ACTIONS = [ "LEFT", "UP", "DOWN", "RIGHT", "PLANT_BOMB"]
   // TODO : utiliser l'IA plutôt qu'une direction random
-  const randomDirection = DIRECTIONS[Math.floor((Math.random() * DIRECTIONS.length))]
-  const randomAction = ACTIONS[Math.floor((Math.random() * 2))]
   let obj = null
-  if (randomAction == "PLANT_BOMB"){
-    obj = { action: randomAction}
-  }
-  else{
-    obj = { action: randomAction, direction: randomDirection}
-  }
+  for (let i = 0; i < 5; i++)
+   {
+      let randomAction = ACTIONS[Math.floor((Math.random() * 5))]
+      if (obj == null){
+         obj = randomAction
+      }
+      else{
+         obj = obj + "," + randomAction
+      }
+   } 
   return res.status(200).json(obj)
 })
 
