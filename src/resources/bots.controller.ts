@@ -23,13 +23,13 @@ BotsController.get('/bot-movement', (req, res) => {
   return res.status(200).json(obj)
 })
 
+
 BotsController.post('/set-game', (req, res) => {
   const DIFFICULTY = [ "EASY", "MEDIUM", "HARD"]
-  const games:Game = {id: 1, difficulty: 'EASY', map: '3x3'}
-  /*
+  //const games:Game = {id: 1, difficulty: 'EASY', map: '3x3'}
   const randomDifficulty = DIFFICULTY[Math.floor((Math.random() * DIFFICULTY.length))]
+  console.log(req.body)
   const obj = { difficulty: randomDifficulty }
-  */
  try{
     return res.status(200).json("Succès dans l'initialisation de la partie.")
  } catch(NotFoundException){
