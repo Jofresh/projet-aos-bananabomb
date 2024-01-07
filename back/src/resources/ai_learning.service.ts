@@ -1,5 +1,6 @@
 import { NotFoundException } from '~/utils/exceptions';
 import fs from 'fs';
+import path from 'path';
 
 interface caseGrille {
     x: number;
@@ -24,7 +25,7 @@ export class AiLearningService {
     
     newLearning(mapTest: caseGrille[]){
         //map: string[]
-        const DIRECTIONS = [ "LEFT", "UP", "DOWN", "RIGHT"];
+        const DIRECTIONS = [ "L", "U", "D", "R"];
         //
         let bestPath: bestPath = {firstStep: "N", secondStep: "N", thirdStep: "N"};
         let bestPathValue = 0;
@@ -41,7 +42,7 @@ export class AiLearningService {
                 //console.log(randomDirection)
                 pathValue = pathValue + randomDirection.charAt(0);
                 switch(randomDirection){
-                    case "LEFT":
+                    case "L":
                         if(newPosBot.x > 0 && mapTestOG.filter(coords => (coords.x == newPosBot.x - 1) && (coords.y == newPosBot.y) && (coords.value != 0))){
                             newPosBot.x = newPosBot.x - 1;
                             let tmpValue = mapTestOG.filter(coords => coords.x == newPosBot.x && coords.y == newPosBot.y )[0];
@@ -49,7 +50,7 @@ export class AiLearningService {
                             currentPathValue = currentPathValue + newPosBot.value;
                         }
                         break;
-                    case "UP":
+                    case "U":
                         if(newPosBot.y > 0 && mapTestOG.filter(coords => (coords.x == newPosBot.x) && (coords.y == newPosBot.y - 1) && (coords.value != 0))){
                             newPosBot.y = newPosBot.y - 1;
                             let tmpValue = mapTestOG.filter(coords => coords.x == newPosBot.x && coords.y == newPosBot.y )[0];
@@ -57,7 +58,7 @@ export class AiLearningService {
                             currentPathValue = currentPathValue + newPosBot.value;
                         }
                         break;
-                    case "DOWN":
+                    case "D":
                         //ajouter if condition
                         if(mapTestOG.filter(coords => coords.y == newPosBot.y + 1).length && mapTestOG.filter(coords => (coords.x == newPosBot.x) && (coords.y == newPosBot.y + 1) && (coords.value != 0))){
                             newPosBot.y = newPosBot.y + 1;
@@ -66,7 +67,7 @@ export class AiLearningService {
                             currentPathValue = currentPathValue + newPosBot.value;
                         }
                         break;
-                    case "RIGHT":
+                    case "R":
                         //ajouter if condition
                         if(mapTestOG.filter(coords => coords.x == newPosBot.x + 1).length && mapTestOG.filter(coords => (coords.x == newPosBot.x + 1) && (coords.y == newPosBot.y) && (coords.value != 0))){
                             newPosBot.x = newPosBot.x + 1;
@@ -96,13 +97,12 @@ export class AiLearningService {
     }
 
     writeInFile(id: string, result: bestPath){
-        let path = result.firstStep+result.secondStep+result.thirdStep;
-        console.log(process.cwd());
-        let data = fs.readFileSync(process.cwd()+'\\src\\resources\\ai_learning_db.json', 'utf-8');
+        let computedPath = result.firstStep+result.secondStep+result.thirdStep;
+        let data = fs.readFileSync(path.join(__dirname, 'ai_learning_db.json'), 'utf-8');
         let JSONdata = JSON.parse(data)
         try {
-            JSONdata = {...JSONdata, [id]: path };
-            fs.writeFileSync(process.cwd()+'\\src\\resources\\ai_learning_db.json', JSON.stringify(JSONdata))
+            JSONdata = {...JSONdata, [id]: computedPath };
+            fs.writeFileSync(path.join(__dirname, 'ai_learning_db.json'), JSON.stringify(JSONdata))
         } catch (e) {
             console.log(e);
         }

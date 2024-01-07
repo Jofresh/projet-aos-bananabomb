@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AiLearningService } from './ai_learning.service';
 import fs from 'fs';
+import path from 'path';
 /**
  * Nous créeons un `Router` Express, il nous permet de créer des routes en dehors du fichier `src/index.ts`
  */
@@ -11,7 +12,7 @@ BotsController.post('/bot-movement', (req, res) => {
    let mapReq = req.body;
    let formatmap = aiLearningClass.formatMap(mapReq);
    let indexMap = aiLearningClass.generateIdMap(formatmap);
-   let data = fs.readFileSync(process.cwd()+'\\src\\resources\\ai_learning_db.json', 'utf-8');
+   let data = fs.readFileSync(path.join(__dirname, 'ai_learning_db.json'), 'utf-8');
    let JSONdata = JSON.parse(data);
    if (!!JSONdata[indexMap]){
       return res.json({ nextMoves: JSONdata[indexMap]})
@@ -28,7 +29,7 @@ BotsController.post('/bot-movement', (req, res) => {
          }
       } 
       aiLearningClass.newLearning(formatmap);
-      return res.status(200).json({ nextMoves: obj});
+      return res.status(200).json({ nextMoves: obj });
    }
 })
 

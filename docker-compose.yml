@@ -9,9 +9,17 @@ services:
       - "5173:5173"
     depends_on:
       - back
+    networks:
+      - api
   back:
     build:
       context: ./back
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    networks:
+      - api
+
+networks:
+  api:
+    driver: bridge

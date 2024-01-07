@@ -91,6 +91,8 @@ function Game() {
 
     const moveBot = useCallback(() => {
         getBotMovements({ map: formatMapForBack(state) }).then((payload: any) => {
+            if (!payload) return;
+
             let nextMoves = payload.nextMoves;
             let latestCoords = state.botCoords;
             
