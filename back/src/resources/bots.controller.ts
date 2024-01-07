@@ -1,15 +1,14 @@
 import { Router } from 'express';
-import { AiLearningService } from './ai_learning.service';
+import IALearningInstance from './ai_learning.service';
 import fs from 'fs';
 import path from 'path';
 
 const BotsController = Router()
-const aiLearningClass = new AiLearningService()
 
 BotsController.post('/bot-movement', (req, res) => {
-   let mapReq = req.body;
-   let formatmap = aiLearningClass.formatMap(mapReq);
-   let indexMap = aiLearningClass.generateIdMap(formatmap);
+   let mapReq = req.body.map || [];
+   let formatmap = IALearningInstance.formatMap(mapReq);
+   let indexMap = IALearningInstance.generateIdMap(formatmap);
    let data = fs.readFileSync(path.join(__dirname, 'ai_learning_db.json'), 'utf-8');
    let JSONdata = JSON.parse(data);
    if (!!JSONdata[indexMap]){
@@ -26,7 +25,7 @@ BotsController.post('/bot-movement', (req, res) => {
             obj = obj + randomAction
          }
       } 
-      aiLearningClass.newLearning(formatmap);
+      IALearningInstance.newLearning(formatmap);
       return res.status(200).json({ nextMoves: obj });
    }
 })

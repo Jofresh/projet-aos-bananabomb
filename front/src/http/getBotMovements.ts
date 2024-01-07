@@ -15,6 +15,6 @@ export default async function getBotMovements({ map }: Props) {
             headers: {
                 "Content-Type": "application/json",
                 },
-            body: JSON.stringify(map),
+            body: JSON.stringify({ map }),
         }).then((response) => response.json())
 }

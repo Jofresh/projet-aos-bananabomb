@@ -137,7 +137,6 @@ function Game() {
                     // Plant bomb randomly
                     const plantsBomb = Math.random() < (1 / 8);
                     if (plantsBomb) {
-                        console.log('PLANTING BOMB')
                         const newBomb = { ...latestCoords };
                         dispatch({ type: "ADD_BOMB", payload: newBomb });
                         setTimeout(() => {
