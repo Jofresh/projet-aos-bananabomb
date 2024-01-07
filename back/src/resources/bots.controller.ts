@@ -2,9 +2,7 @@ import { Router } from 'express';
 import { AiLearningService } from './ai_learning.service';
 import fs from 'fs';
 import path from 'path';
-/**
- * Nous créeons un `Router` Express, il nous permet de créer des routes en dehors du fichier `src/index.ts`
- */
+
 const BotsController = Router()
 const aiLearningClass = new AiLearningService()
 

@@ -5,9 +5,6 @@ import { BotsController  } from '~/resources/bots.controller'
 import { ExceptionsHandler } from '~/middlewares/exceptions.handler'
 import { UnknownRoutesHandler } from '~/middlewares/unknownRoutes.handler'
 
-/**
- * On créé une nouvelle "application" express
- */
 const app = express()
 
 app.use(express.json())
