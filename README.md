@@ -18,7 +18,7 @@ Pour installer le projet, suivez les étapes ci-dessous:
 3. Lancez Docker Compose pour déployer l'application:
 
    ```bash
-   docker-compose up -d
+   docker-compose up -d --build
    ```
 
 4. Accédez à l'application depuis votre navigateur à l'adresse [http://localhost:5173](http://localhost:5173).
