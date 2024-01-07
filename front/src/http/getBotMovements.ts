@@ -10,24 +10,11 @@ interface Props {
 }
 
 export default async function getBotMovements({ map }: Props) {
-    // TODO : to remove and call api
-    return new Promise((resolve) => {
-        const randomMoves = Object.values(BOT_MOVES)
-            .sort(() => Math.random() - 0.5)
-            .slice(0, 3);
-        return resolve({ nextMoves: randomMoves.join('') });
-    })
-
-    // TODO : to call
-    try {
-        const response = await fetch(GET_BOT_MOVEMENT_API_URL, {
-            method: "GET",
+    return fetch(GET_BOT_MOVEMENT_API_URL, {
+            method: "POST",
             headers: {
                 "Content-Type": "application/json",
-            },
+                },
             body: JSON.stringify(map),
-        });
-        const data = await response.json();
-        return data;
-    } catch (error) {}
+        }).then((response) => response.json())
 }

@@ -17,7 +17,6 @@ import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import Player from "./Player";
 import Bot from "./Bot";
-import getBotMovement from "../http/getBotMovement";
 import { Action, Coords, State } from "../types";
 import "../styles/game.css"
 import { formatMapForBack } from "../utils/map";
@@ -91,7 +90,7 @@ function Game() {
     );
 
     const moveBot = useCallback(() => {
-        getBotMovements({ state, map: formatMapForBack(state) }).then((payload: any) => {
+        getBotMovements({ map: formatMapForBack(state) }).then((payload: any) => {
             let nextMoves = payload.nextMoves;
             let latestCoords = state.botCoords;
             

@@ -1,0 +1,20 @@
+GET http://localhost:3000/ HTTP/1.1
+
+###
+
+GET http://localhost:3000/bot-movement HTTP/1.1
+content-type: application/json
+
+{
+    "map": [
+        { "x": 0, "y": 0, "value": 1 },
+        { "x": 1, "y": 0, "value": 4 },
+        { "x": 2, "y": 0, "value": 0 },
+        { "x": 0, "y": 1, "value": 4 },
+        { "x": 1, "y": 1, "value": 0 },
+        { "x": 2, "y": 1, "value": 0 },
+        { "x": 0, "y": 2, "value": 0 },
+        { "x": 1, "y": 2, "value": 0 },
+        { "x": 2, "y": 2, "value": 0 }
+    ]
+}
