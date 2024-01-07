@@ -7,17 +7,16 @@ import fs from 'fs';
 const BotsController = Router()
 const aiLearningClass = new AiLearningService()
 
-BotsController.get('/bot-movement', (req, res) => {
-   let mapReq = req.body.map;
+BotsController.post('/bot-movement', (req, res) => {
+   let mapReq = req.body;
    let formatmap = aiLearningClass.formatMap(mapReq);
    let indexMap = aiLearningClass.generateIdMap(formatmap);
    let data = fs.readFileSync(process.cwd()+'\\src\\resources\\ai_learning_db.json', 'utf-8');
    let JSONdata = JSON.parse(data);
-   if(JSONdata.include(indexMap)){
-      return {nextMoves: JSONdata[indexMap]}
-   }
-   else{
-      const ACTIONS = [ "LEFT", "UP", "DOWN", "RIGHT"]
+   if (!!JSONdata[indexMap]){
+      return res.json({ nextMoves: JSONdata[indexMap]})
+   } else{
+      const ACTIONS = [ "L", "U", "D", "R"]
       let obj = null
       for (let i = 0; i < 3; i++){
          let randomAction = ACTIONS[Math.floor((Math.random() * 4))]
@@ -25,13 +24,12 @@ BotsController.get('/bot-movement', (req, res) => {
             obj = randomAction
          }
          else{
-            obj = obj + "," + randomAction
+            obj = obj + randomAction
          }
       } 
       aiLearningClass.newLearning(formatmap);
-      return res.status(200).json(obj);
+      return res.status(200).json({ nextMoves: obj});
    }
-  
 })
 
 
