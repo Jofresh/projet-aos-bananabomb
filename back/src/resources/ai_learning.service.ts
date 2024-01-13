@@ -126,6 +126,13 @@ class AiLearningService {
         map.forEach(caseGrille => id = id + caseGrille.value);
         return id;
     }
+
+    readFile(){
+        let data = fs.readFileSync(path.join(__dirname, 'ai_learning_db.json'), 'utf-8');
+        let JSONdata = JSON.parse(data)
+        let lengthOfJSON = Object.keys(JSONdata).length
+        return lengthOfJSON
+    }
 }
 
 export default new AiLearningService();
