@@ -6,7 +6,6 @@ import path from 'path';
 const BotsController = Router()
 let jsonStateBeforeGame = 0
 let jsonStateAfterGame = 0
-let newResult = 0
 
 BotsController.post('/bot-movement', (req, res) => {
    let mapReq = req.body.map || [];
@@ -33,7 +32,7 @@ BotsController.post('/bot-movement', (req, res) => {
    }
 })
 
-BotsController.post('/set-game', (req, res) => {
+BotsController.post('/game', (req, res) => {
   const DIFFICULTY = [ "EASY", "MEDIUM", "HARD"]
   //const games:Game = {id: 1, difficulty: 'EASY', map: '3x3'}
   const randomDifficulty = DIFFICULTY[Math.floor((Math.random() * DIFFICULTY.length))]
@@ -47,20 +46,20 @@ BotsController.post('/set-game', (req, res) => {
 }
 })
 
-BotsController.delete('/stop-game', (req, res) => {
+BotsController.delete('/game', (req, res) => {
   jsonStateAfterGame = IALearningInstance.readFile()
-  newResult = jsonStateAfterGame - jsonStateBeforeGame
   try{
-    return res.status(200).json("Succès dans la suppression de la partie." + " " + "Chemin apprit par l'IA :" + " " + newResult)
+    return res.status(200).json("Succès dans la suppression de la partie.")
 } catch(NotFoundException){
     return res.json("Erreur dans la suppression de la partie.")
 }
 })
 
-BotsController.get('/claim-result', (req, res) => {
+BotsController.get('/learning-rate', (req, res) => {
+   let newResult = jsonStateAfterGame - jsonStateBeforeGame
    let percentageResult =  100 * (newResult / jsonStateAfterGame) 
    try{
-      return res.status(200).json("Voici le taux d'apprentissage de l'IA sur cette partie : " + percentageResult + "%")
+      return res.status(200).json("Chemin apprit par l'IA :" + " " + newResult + " " + "/" + " " + "Voici le taux d'apprentissage de l'IA sur cette partie : " + percentageResult + "%")
    } catch(NotFoundException){
       return res.json("Erreur dans la récupération du résultat de l'apprentissage de l'IA.")
    }

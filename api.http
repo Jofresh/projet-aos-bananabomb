@@ -5,10 +5,10 @@ GET http://localhost:3000/ HTTP/1.1
 POST http://localhost:3000/set-game HTTP/1.1
 
 ###
-DELETE http://localhost:3000/stop-game HTTP/1.1
+DELETE http://localhost:3000/game HTTP/1.1
 
 ###
-GET http://localhost:3000/claim-result HTTP/1.1
+GET http://localhost:3000/learning-rate HTTP/1.1
 
 ###
 
