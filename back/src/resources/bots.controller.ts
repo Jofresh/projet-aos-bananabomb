@@ -6,7 +6,6 @@ import path from 'path';
 const BotsController = Router()
 let jsonStateBeforeGame = 0
 let jsonStateAfterGame = 0
-// let newResult = 0
 
 BotsController.post('/bot-movement', (req, res) => {
    let mapReq = req.body.map || [];
@@ -33,7 +32,7 @@ BotsController.post('/bot-movement', (req, res) => {
    }
 })
 
-BotsController.post('/set-game', (req, res) => {
+BotsController.post('/game', (req, res) => {
   const DIFFICULTY = [ "EASY", "MEDIUM", "HARD"]
   //const games:Game = {id: 1, difficulty: 'EASY', map: '3x3'}
   const randomDifficulty = DIFFICULTY[Math.floor((Math.random() * DIFFICULTY.length))]
