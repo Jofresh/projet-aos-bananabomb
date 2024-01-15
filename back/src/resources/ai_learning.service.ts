@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { FILE_DB_PATH } from '~/config';
-import { bestPath, gameTile } from '~/utils/ai';
-import { DIRECTION } from '~/utils/game';
+import { bestPath, gameTile } from '~~/types/ai';
+import { DIRECTION } from '~~/types/game';
 
 class AILearning {
     constructor() {}
@@ -21,8 +21,8 @@ class AILearning {
     newLearning(givenMap: gameTile[]) {
         const possibleDirections = Object.values(DIRECTION);
             
-        let bestPath: bestPath = { firstStep: "N", secondStep: "N", thirdStep: "N" };
         let bestPathValue = 0;
+        let bestPath: bestPath = { firstStep: "N", secondStep: "N", thirdStep: "N" };
 
         try {
             for (let k = 1; k < 1000; k++) {
@@ -38,7 +38,7 @@ class AILearning {
                         value: botPosition.value
                     };
 
-                    let randomDirection =  possibleDirections[Math.floor(Math.random() * 4)];
+                    const randomDirection = possibleDirections[Math.floor(Math.random() * possibleDirections.length)];
                     pathValue += randomDirection.charAt(0);
                     switch (randomDirection) {
                         case DIRECTION.LEFT:
@@ -77,8 +77,16 @@ class AILearning {
                             break;
                         default:
                     }
-                    parsedMap.filter(coords => coords.x == botPosition.x && coords.y == botPosition.y).forEach(coords=> {coords.value = 3});
-                    botPosition = {x: newPosBot.x, y: newPosBot.y, value: 1};
+
+                    parsedMap.filter(coords => coords.x == botPosition.x && coords.y == botPosition.y).forEach(coords => {
+                        coords.value = 3
+                    });
+
+                    botPosition = {
+                        x: newPosBot.x,
+                        y: newPosBot.y,
+                        value: 1
+                    };
                 }
 
                 if (currentPathValue > bestPathValue) {

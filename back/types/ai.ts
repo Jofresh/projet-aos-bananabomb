@@ -5,6 +5,7 @@ export interface gameTile {
 }
 
 export interface bestPath {
-    path: gameTile[];
-    score: number;
+    firstStep: string;
+    secondStep: string;
+    thirdStep: string;
 }

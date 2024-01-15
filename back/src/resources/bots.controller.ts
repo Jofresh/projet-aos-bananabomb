@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { DIFFICULTY, DIRECTION } from '~/utils/game';
-import { FILE_DB_PATH } from '~/config';
 
+import { FILE_DB_PATH } from '~/config';
+import { DIFFICULTY, DIRECTION } from '~~/types/game';
 import AILearningInstance from './ai_learning.service';
 
 let jsonStateBeforeGame = 0
@@ -32,7 +32,7 @@ BotsController.post('/bot-movement', (req, res) => {
 
 // This endpoint is called by the front to initialize the game
 BotsController.post('/game', (req, res) => {
-   jsonStateBeforeGame = IALearningInstance.readFile()
+   jsonStateBeforeGame = AILearningInstance.readFile()
 
    const difficulty = req.body.difficulty;
 
@@ -51,7 +51,7 @@ BotsController.post('/game', (req, res) => {
 
 // This endpoint is called by the front to stop the game
 BotsController.delete('/game', (req, res) => {
-   jsonStateAfterGame = IALearningInstance.readFile()
+   jsonStateAfterGame = AILearningInstance.readFile()
    try{
       return res.status(200).json("Succès dans la suppression de la partie.")
    } catch(NotFoundException) {
