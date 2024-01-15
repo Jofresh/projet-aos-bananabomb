@@ -1,13 +1,11 @@
+import { useEffect, useReducer, useCallback, useState } from "react";
 import { Stage, TilingSprite } from "@pixi/react";
-import { useEffect, useReducer, useCallback } from "react";
 import {
     MAP_SIZE,
     TILE_SIZE,
     BLOCKS,
-    BRICKS,
     BOMB_DELAY,
     EXPLOSION_DELAY,
-    DIFFICULTY,
     BOT_MOVES,
     API_CALL_DELAY,
 } from "../constants";
@@ -17,61 +15,40 @@ import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import Player from "./Player";
 import Bot from "./Bot";
-import { Action, Coords, State } from "../types";
-import "../styles/game.css"
-import { formatMapForBack } from "../utils/map";
 import useInterval from "../hooks/useInterval";
-import useOnInit from "../hooks/useOnInit";
+import useOnStart from "../hooks/useOnStart";
 import getBotMovements from "../http/getBotMovements";
-
-const initialState = {
-    coords: { x: 0, y: 0 },
-    botCoords: { x: MAP_SIZE - TILE_SIZE, y: MAP_SIZE - TILE_SIZE },
-    bombs: [],
-    explosions: [],
-    gameOver: false,
-    wonGame: false,
-    bricks: BRICKS,
-};
-
-const botActionType = {
-    MOVE_BOT: "MOVE_BOT",
-};
-
-function reducer(state: State, action: Action) {
-    switch (action.type) {
-        case "SET_COORDS":
-            return { ...state, coords: action.payload };
-        case botActionType.MOVE_BOT:
-            return { ...state, botCoords: action.payload };
-        case "ADD_BOMB":
-            return { ...state, bombs: [...state.bombs, action.payload] };
-        case "REMOVE_BOMB":
-            return { ...state, bombs: state.bombs.filter(bomb => !(bomb.x === action.payload.x && bomb.y === action.payload.y)) };
-        case "ADD_EXPLOSION":
-            return { ...state, explosions: [...state.explosions, ...action.payload] };
-        case "REMOVE_EXPLOSIONS":
-            return { ...state, explosions: state.explosions.filter(explosion => !action.payload.some((zone: Coords) => zone.x === explosion.x && zone.y === explosion.y)) };
-        case "REMOVE_BRICKS":
-            return { ...state, bricks: state.bricks.filter(brick => !action.payload.some((zone: Coords) => zone.x === brick.x && zone.y === brick.y)) };
-        case "SET_GAME_OVER":
-            return { ...state, gameOver: true };
-        case "SET_GAME_WIN":
-            return { ...state, wonGame: true };
-        case "RESET_GAME":
-            return initialState;
-        default:
-            throw new Error();
-    }
-}
+import { Coords } from "../types";
+import { formatMapForBack } from "../utils/map";
+import { reducer, initialState, ACTIONS } from "../reducers/game";
+import "../styles/game.css"
+import deleteStopGame from "../http/deleteStopGame";
+import LearningRateDetails from "./LearningRateDetails";
 
 function Game() {
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const [displayLearningRate, setDisplayLearningRate] = useState(false);
+
+    // Set the game difficulty and grid size, calling the API
+    const { gameId, restartGame } = useOnStart();
+
+    const onEndGame = async () => {
+        await deleteStopGame({ body: { id: gameId } });
+
+        setDisplayLearningRate(true);
+    };
+
     const resetGame = useCallback(() => {
-        dispatch({ type: "RESET_GAME" });
+        dispatch({ type: ACTIONS.RESET_GAME });
+
+        // Call API to reinit game
+        restartGame();
+
+        setDisplayLearningRate(false);
     }, []);
 
+    // Function to check if the player is colliding with a block, a brick or a bomb to prevent him from moving
     const checkCollision = useCallback(
         (coords: Coords) => {
             return (
@@ -126,7 +103,7 @@ function Game() {
                     newCoords.y <= MAP_SIZE - TILE_SIZE
                 ) {
                     latestCoords = newCoords;
-                    dispatch({ type: "MOVE_BOT", payload: newCoords });
+                    dispatch({ type: ACTIONS.MOVE_BOT, payload: newCoords });
                 }
 
                 nextMoves = nextMoves.slice(1);
@@ -134,13 +111,13 @@ function Game() {
                 if (nextMoves.length === 0) {
                     clearInterval(botMoveInterval);
                     
-                    // Plant bomb randomly
+                    // Plant bomb randomly (done client-side, not server-side)
                     const plantsBomb = Math.random() < (1 / 8);
                     if (plantsBomb) {
                         const newBomb = { ...latestCoords };
-                        dispatch({ type: "ADD_BOMB", payload: newBomb });
+                        dispatch({ type: ACTIONS.ADD_BOMB, payload: newBomb });
                         setTimeout(() => {
-                            dispatch({ type: "REMOVE_BOMB", payload: newBomb });
+                            dispatch({ type: ACTIONS.REMOVE_BOMB, payload: newBomb });
                             const zones = [
                                 { x: newBomb.x, y: newBomb.y },
                                 { x: newBomb.x + TILE_SIZE, y: newBomb.y },
@@ -148,9 +125,9 @@ function Game() {
                                 { x: newBomb.x, y: newBomb.y + TILE_SIZE },
                                 { x: newBomb.x, y: newBomb.y - TILE_SIZE },
                             ];
-                            dispatch({ type: "ADD_EXPLOSION", payload: zones });
+                            dispatch({ type: ACTIONS.ADD_EXPLOSION, payload: zones });
                             setTimeout(() => {
-                                dispatch({ type: "REMOVE_EXPLOSIONS", payload: zones });
+                                dispatch({ type: ACTIONS.REMOVE_EXPLOSIONS, payload: zones });
                             }, EXPLOSION_DELAY);
                         }, BOMB_DELAY);
                     }
@@ -159,7 +136,7 @@ function Game() {
         });
     }, [state, checkCollision]);
 
-    const handleMove = useCallback(
+    const onPressArrows = useCallback(
         (e: KeyboardEvent) => {
             const { x, y } = state.coords;
             let newCoords = null;
@@ -187,19 +164,19 @@ function Game() {
                 newCoords.x <= MAP_SIZE - TILE_SIZE &&
                 newCoords.y <= MAP_SIZE - TILE_SIZE
             ) {
-                dispatch({ type: "SET_COORDS", payload: newCoords });
+                dispatch({ type: ACTIONS.SET_COORDS, payload: newCoords });
             }
         },
         [state.coords, checkCollision]
     );
 
-    const handlePlantBomb = useCallback(
+    const onPressSpace = useCallback(
         (e: KeyboardEvent) => {
             if (e.key !== " ") return;
             const newBomb = { ...state.coords };
-            dispatch({ type: "ADD_BOMB", payload: newBomb });
+            dispatch({ type: ACTIONS.ADD_BOMB, payload: newBomb });
             setTimeout(() => {
-                dispatch({ type: "REMOVE_BOMB", payload: newBomb });
+                dispatch({ type: ACTIONS.REMOVE_BOMB, payload: newBomb });
                 const zones = [
                     { x: newBomb.x, y: newBomb.y },
                     { x: newBomb.x + TILE_SIZE, y: newBomb.y },
@@ -207,34 +184,37 @@ function Game() {
                     { x: newBomb.x, y: newBomb.y + TILE_SIZE },
                     { x: newBomb.x, y: newBomb.y - TILE_SIZE },
                 ];
-                dispatch({ type: "ADD_EXPLOSION", payload: zones });
+                dispatch({ type: ACTIONS.ADD_EXPLOSION, payload: zones });
                 setTimeout(() => {
-                    dispatch({ type: "REMOVE_EXPLOSIONS", payload: zones });
+                    dispatch({ type: ACTIONS.REMOVE_EXPLOSIONS, payload: zones });
                 }, EXPLOSION_DELAY);
             }, BOMB_DELAY);
         },
         [state.coords]
     );
 
+    // Move bot every 3 seconds
     useInterval(() => {
         if (state.gameOver || state.wonGame) return;
         moveBot();
     }, API_CALL_DELAY);
 
-    // Set the game difficulty and grid size, calling the API
-    const { id: gameId } = useOnInit();
-
+    // Define key listeners
     useEffect(() => {
         if (state.gameOver || state.wonGame) return;
-        window.addEventListener("keydown", handleMove);
-        window.addEventListener("keypress", handlePlantBomb);
+        window.addEventListener("keydown", onPressArrows);
+        window.addEventListener("keypress", onPressSpace);
         return () => {
-            window.removeEventListener("keypress", handlePlantBomb);
-            window.removeEventListener("keydown", handleMove);
+            window.removeEventListener("keypress", onPressSpace);
+            window.removeEventListener("keydown", onPressArrows);
         };
-    }, [handleMove, handlePlantBomb, state.gameOver, state.wonGame]);
+    }, [onPressArrows, onPressSpace, state.gameOver, state.wonGame]);
 
+    // Handle the end of the game
     useEffect(() => {
+        if (state.gameOver || state.wonGame) return;
+
+        // Check if player is in explosion zone
         if (
             state.explosions.some(
                 (explosion) =>
@@ -242,11 +222,12 @@ function Game() {
                     explosion.y === state.coords.y
             )
         ) {
-            dispatch({ type: "SET_GAME_OVER" });
+            dispatch({ type: ACTIONS.SET_GAME_OVER });
+
+            onEndGame();
             return;
         }
 
-        // Check if brick is in explosion zone
         const explodedBricks = state.bricks.filter((brick) =>
             state.explosions.some(
                 (explosion) =>
@@ -257,7 +238,7 @@ function Game() {
         // Remove exploded bricks
         if (explodedBricks.length > 0) {
             dispatch({
-                type: "REMOVE_BRICKS",
+                type: ACTIONS.REMOVE_BRICKS,
                 payload: explodedBricks.map((brick) => ({
                     x: brick.x,
                     y: brick.y,
@@ -265,6 +246,7 @@ function Game() {
             });
         }
 
+        // Check if player is in explosion zone
         if (
             state.explosions.some(
                 (explosion) =>
@@ -272,9 +254,11 @@ function Game() {
                     explosion.y === state.botCoords.y
             )
         ) {
-            dispatch({ type: "SET_GAME_WIN" });
+            dispatch({ type: ACTIONS.SET_GAME_WIN });
+
+            onEndGame();
         }
-    }, [state.coords, state.explosions, state.botCoords]);
+    }, [state.coords, state.explosions, state.botCoords, state.gameOver, state.wonGame]);
 
     return (
         <>
@@ -314,6 +298,7 @@ function Game() {
                         <button onClick={resetGame}>Restart</button>
                     </div>
                 )}
+                {displayLearningRate && <LearningRateDetails show={displayLearningRate} />}
             </div>
         </>
     );
