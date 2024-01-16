@@ -15,6 +15,20 @@ export function generateBricks() {
     return bricks;
 }
 
+export function generateBlocks() {
+    const blocks = [];
+
+    for (let i = 0; i < GRID_SIZE; i++) {
+        for (let j = 0; j < GRID_SIZE; j++) {
+            if (i % 2 === 1 && j % 2 === 1) {
+                blocks.push({ x: TILE_SIZE * i, y: TILE_SIZE * j });
+            }
+        }
+    }
+
+    return blocks;
+}
+
 export function formatMapForBack({
     coords: playerCoords,
     botCoords,

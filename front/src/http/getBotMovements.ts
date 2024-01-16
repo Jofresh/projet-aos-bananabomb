@@ -1,5 +1,5 @@
-import { BOT_MOVES, GET_BOT_MOVEMENT_API_URL, MAP_SIZE, TILE_SIZE } from "../constants";
-import { Coords, State } from "../types";
+import { GET_BOT_MOVEMENT_API_URL } from "../constants";
+import { Coords } from "../types";
 
 interface CoordsValue extends Coords {
     value: number;

@@ -1,6 +1,7 @@
 .result-container {
     display: grid;
     place-items: center;
+    max-width: var(--canvas-width);
 }
 
 .result-container > div {
