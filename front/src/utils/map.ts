@@ -50,7 +50,8 @@ export function formatMapForBack({
         value: CELL_VALUE.BOT,
     };
 
-    const dangers = [...bombs, ...explosions].map(({ x, y }) => ({
+    const bombsWithoutBot = bombs.filter(({ x, y }) => x !== bot.x && y !== bot.y);
+    const dangers = [...bombsWithoutBot, ...explosions].map(({ x, y }) => ({
         x: x / TILE_SIZE,
         y: y / TILE_SIZE,
         value: CELL_VALUE.DANGER,

@@ -68,7 +68,7 @@ function Game() {
 
     const moveBot = useCallback(() => {
         getBotMovements({ map: formatMapForBack(state) }).then((payload: any) => {
-            if (!payload) return;
+            if (!payload || payload?.error) return;
 
             let nextMoves = payload.nextMoves;
             let latestCoords = state.botCoords;
@@ -112,7 +112,7 @@ function Game() {
                     clearInterval(botMoveInterval);
                     
                     // Plant bomb randomly (done client-side, not server-side)
-                    const plantsBomb = Math.random() < (1 / 8);
+                    const plantsBomb = Math.random() < (1 / 10);
                     if (plantsBomb) {
                         const newBomb = { ...latestCoords };
                         dispatch({ type: ACTIONS.ADD_BOMB, payload: newBomb });
@@ -132,7 +132,7 @@ function Game() {
                         }, BOMB_DELAY);
                     }
                 }
-            }, (API_CALL_DELAY / 3) - 100);
+            }, (API_CALL_DELAY / 3) / 2);
         });
     }, [state, checkCollision]);
 

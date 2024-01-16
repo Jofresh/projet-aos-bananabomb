@@ -12,7 +12,8 @@ function LearningRateDetails({ show }: LearningRateDetailsProps) {
 
     return (
         <div>
-            <p>{data}</p>
+            <p>Chemins appris par l'IA : <strong>{data?.learnedPathsNumber}</strong></p>
+            <p>Taux d'apprentissage : <strong>{data?.percentageResult}</strong></p>
         </div>
     );
 }
