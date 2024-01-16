@@ -5,8 +5,8 @@ export const TILE_SIZE = 32;
 
 export const MAP_SIZE = GRID_SIZE * TILE_SIZE;
 
-export const BOMB_DELAY = 2000;
-export const EXPLOSION_DELAY = 1000;
+export const BOMB_DELAY = 3000;
+export const EXPLOSION_DELAY = 300;
 
 export const BLOCKS = generateBlocks();
 
