@@ -19,7 +19,7 @@ BotsController.post('/bot-movement', (req, res) => {
   const dbFile = fs.readFileSync(path.join(__dirname, FILE_DB_PATH), 'utf-8')
   const parsedFile = JSON.parse(dbFile)
   if (parsedFile[mapId]) {
-    return res.status(200).json({ nextMoves: parsedFile[mapId] })
+    return res.status(200).json({ nextMoves: parsedFile[mapId], source: 'AI' })
   }
 
   AILearningInstance.newLearning(formattedMap)
@@ -27,7 +27,7 @@ BotsController.post('/bot-movement', (req, res) => {
   // Picks three random moves
   const ACTIONS = Object.values(DIRECTION)
   const nextMoves = Array.from({ length: 3 }, () => ACTIONS[Math.floor(Math.random() * ACTIONS.length)]).join('')
-  return res.status(200).json({ nextMoves })
+  return res.status(200).json({ nextMoves, source: 'random' })
 })
 
 // This endpoint is called by the front to initialize the game
@@ -51,20 +51,23 @@ BotsController.post('/game', (req, res) => {
 
 // This endpoint is called by the front to stop the game
 BotsController.delete('/game', (req, res) => {
-  jsonStateAfterGame = AILearningInstance.readFile()
-  try{
-    return res.status(200).json('Succès dans la suppression de la partie.')
-  } catch(NotFoundException) {
-    return res.json('Erreur dans la suppression de la partie.')
+  try {
+    jsonStateAfterGame = AILearningInstance.readFile()
+    return res.status(200).json({ success: 'Succès dans la suppression de la partie.' })
+  } catch (e) {
+    return res.json({ error: 'Erreur dans la suppression de la partie.' })
   }
 })
 
 // This endpoint is called by the front to get the learning rate of the bot
 BotsController.get('/learning-rate', (req, res) => {
-  const newResult = jsonStateAfterGame - jsonStateBeforeGame
-  const percentageResult =  100 * (newResult / jsonStateAfterGame)
-
-  return res.status(200).json({ learnedPathsNumber: newResult, percentageResult })
+  try {
+    const newResult = jsonStateAfterGame - jsonStateBeforeGame
+    const percentageResult =  100 * (newResult / jsonStateAfterGame)
+    return res.status(200).json({ success: true, learnedPathsNumber: newResult, percentageResult })
+  } catch (e) {
+    return res.status(500).json({ error: "Erreur dans le calcul du taux d'apprentissage." })
+  }
 })
 
 export { BotsController }
