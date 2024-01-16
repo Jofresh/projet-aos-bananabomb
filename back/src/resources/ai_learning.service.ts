@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { FILE_DB_PATH } from '~/config'
 import { bestPath, gameTile } from '~~/types/ai'
-import { DIRECTION } from '~~/types/game'
+import { DIRECTION } from '~~/types/Game'
 
 class AILearning {
   formatMap(map: gameTile[]) {

@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 import { FILE_DB_PATH } from '~/config'
-import { DIFFICULTY, DIRECTION } from '~~/types/game'
+import { DIFFICULTY, DIRECTION } from '~~/types/Game'
 import AILearningInstance from './ai_learning.service'
 
 let jsonStateBeforeGame = 0
