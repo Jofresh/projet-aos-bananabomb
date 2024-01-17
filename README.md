@@ -11,7 +11,7 @@ Pour installer le projet, vous avez deux solutions: une solution Docker (plus si
 
    ```bash
    git clone https://github.com/Jofresh/projet-aos-bananabomb.git
-   cd bananabomb
+   cd projet-aos-bananabomb
    ```
 
 2. Assurez-vous d'avoir Docker installé sur votre machine.
@@ -34,8 +34,8 @@ Pour installer le projet, vous avez deux solutions: une solution Docker (plus si
 1. Dans un terminal, clonez le repository GitHub: 
 
    ```bash
-   git clone
-   cd bananabomb
+   git clone https://github.com/Jofresh/projet-aos-bananabomb.git
+   cd projet-aos-bananabomb
    ```
 
 2. Assurez-vous d'avoir Node.js et npm installés sur votre machine.
