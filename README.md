@@ -43,7 +43,7 @@ Pour installer le projet, vous avez deux solutions: une solution Docker (plus si
 3. Dans un premier terminal, lancez l'API:
 
    ```bash
-   cd api
+   cd back
    npm install
    npm run dev
    ```
